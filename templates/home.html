@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="small-2 large-4 columns">
+    <br />
+        <div id="d3_map"></div>
+    </div>
+    
+    <div class="small-4 large-4 columns">
+        <div id="corner_item">
+            <div class="mapText"> Knicks Data</div>
+
+            <p class="mapSubtext">
+                <!-- <a href="#test" data-reveal-id="myModal" class="radius button tiny">Time of Day Viz</a> -->
+                <br />
+                <a href="https://github.com/zunayed/nba_stats">Github</a> 
+                <br />
+                Zunayed Morsalin
+                <br />
+                Darker areas represent better FG %
+                <br />
+                2013-14
+            </p>
+        </div>
+    </div>
+
+    <a id="infoBox" style="display: inline;">
+        On State: 
+    </a>
+
+</div>
+
+<!-- JavaScript -->
+
+<script src="{{ url_for('static', filename='d3.v3.js') }}"></script>
+<script src="{{ url_for('static', filename='maps.js') }}"></script>
+
+{% endblock %}
+
+
+
+
