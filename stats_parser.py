@@ -1,27 +1,106 @@
+'''
+http://stats.nba.com/
+teamGameLogs.html?TeamID=1610612752&pageNo=1&rowsPerPage=100
+'''
+
 from bs4 import BeautifulSoup
 import re
+import io
+import json
 
-fg_data = {}
-fg3_data = {}
 
-soup = BeautifulSoup(open('knicks_stats.html'))
+def parse_html_data(location):
+    soup = BeautifulSoup(open(location))
+    data = {}
+    all_tr = soup.find_all("tr")
 
-all_tr = soup.find_all("tr")
+    for item in all_tr:
+        game_id = item.find_all("td", {'class': "col-Game_ID_SORT"})
+        fg_pct = item.find_all("td", {'class': "col-FG_PCT"})
+        fg3_pct = item.find_all("td", {'class': "col-FG3_PCT"})
 
-for item in all_tr:
-    game_id = item.find_all("td", {'class': "col-Game_ID_SORT"})
-    fg_pct = item.find_all("td", {'class': "col-FG_PCT"})
-    fg3_pct = item.find_all("td", {'class': "col-FG3_PCT"})
+        a = [d.get_text() for d in game_id]
+        b = [d.get_text() for d in fg_pct]
+        c = [d.get_text() for d in fg3_pct]
 
-    a = [d.get_text() for d in game_id]
-    b = [d.get_text() for d in fg_pct]
-    c = [d.get_text() for d in fg3_pct]
+        if len(a) > 0:
+            team = re.sub('[@, vs , .]', '', a[0][19:])
 
-    if len(a) > 0:
-        team = re.sub('[@, vs , .]', '', a[0][19:])
-        fg_data[team] = {
-            'fg %': float(b[0].replace("%", "")),
-            '3pt %': float(c[0].replace("%", ""))}
+            if team in data:
+                data[team]['fg %'].append(float(b[0].replace("%", "")))
+                data[team]['3pt %'].append(float(c[0].replace("%", "")))
+            else:
+                data[team] = {
+                    'fg %': [float(b[0].replace("%", ""))],
+                    '3pt %': [float(c[0].replace("%", ""))]
+                }
 
-for key, value in fg_data.iteritems():
+    return data
+
+
+def convert_teams_to_states(data):
+    nba_teams = {
+        'MIL': 'Wisconsin',
+        'MIN': 'Minnesota',
+        'MIA': 'Miami',
+        'ATL': 'Georgia',
+        'BOS': 'Massachusetts',
+        'DET': 'Michigan',
+        'DEN': 'Colorado',
+        'SAC': 'California',
+        'BKN': 'New York',
+        'POR': 'Oregon',
+        'ORL': 'Florida',
+        'TOR': 'Canada',
+        'CHI': 'Illinois',
+        'SAS': 'Texas',
+        'CHA': 'North Carolina',
+        'CLE': 'Ohio',
+        'WAS': 'Maryland',
+        'LAL': 'California',
+        'PHI': 'Pennsylvania',
+        'MEM': 'Tennessee',
+        'LAC': 'California',
+        'DAL': 'Texas',
+        'OKC': 'Oklahoma',
+        'PHX': 'Arizona',
+        'IND': 'Indiana',
+        'NOP': 'Louisiana',
+        'HOU': 'Texas'
+    }
+
+    new_data = {}
+
+    for team, value in data.iteritems():
+        # if team in same state combine %s
+        if nba_teams[team] in new_data:
+            new_data[nba_teams[team]]['fg %'] = new_data[
+                nba_teams[team]]['fg %'] + value['fg %']
+            new_data[nba_teams[team]]['3pt %'] = new_data[
+                nba_teams[team]]['3pt %'] + value['3pt %']
+        else:
+            new_data[nba_teams[team]] = value
+
+    return new_data
+
+
+def sum_avg(data):
+    for key, value in data.iteritems():
+        fg_avg = sum(value['fg %']) / len(value['fg %'])
+        three_avg = sum(value['3pt %']) / len(value['3pt %'])
+
+        data[key]['fg %'] = fg_avg
+        data[key]['3pt %'] = three_avg
+
+    return data
+
+
+def output_to_json(data):
+    with io.open('data.json', 'w', encoding='utf-8') as f:
+        f.write(unicode(json.dumps(data, ensure_ascii=False)))
+
+
+data = sum_avg(convert_teams_to_states(parse_html_data('knicks_stats.html')))
+
+for key, value in data.iteritems():
     print key, value
