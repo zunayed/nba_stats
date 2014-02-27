@@ -4,6 +4,26 @@
 //data
 var knicks_data
 
+var dataSets = {
+    "fg %": {
+        "name": 'fg %',
+        "color": "Oranges",
+        "minDomain": 30,
+        "maxDomain": 50
+    },
+    "3pt %": {
+        "name": '3pt %',
+        "color": "Greens",
+        "minDomain": 15,
+        "maxDomain": 50
+
+    }
+};
+
+var current = dataSets['fg %']
+var states_data
+
+
 //set up map
 var w = screen.width;
 var h = screen.height;
@@ -17,7 +37,7 @@ var path = d3.geo.path().projection(projection);
 
 //set up a qX-9 number to associate with colorbrew.css styles
 var setColor = d3.scale.quantize()
-    .domain([30, 50])
+    .domain([current.minDomain, current.maxDomain])
     .range(d3.range(1,9).map(function(i) { return "q" + (i) + "-9"; }));
 
 
@@ -35,8 +55,9 @@ var counties = svg.append("g")
 
 
 //reading geoJSON & CSV files
-d3.json("static/data/us_states_small_size.json", function(json){
-    createMap(json);
+d3.json("static/data/us_states_small_size.json", function(states){
+    states_data = states
+    createMap(states_data);
 });
 
 //reading data file
@@ -50,7 +71,7 @@ d3.json("static/data/data.json", function(data){
 //map number of complaint to color intensity
 var stateColor = function(state) {
     if(state in knicks_data){
-        return setColor(knicks_data[state]['fg %']);
+        return setColor(knicks_data[state][current.name]);
     }else{
         //no data
         return "q1-9";
@@ -94,3 +115,13 @@ var mouseout = function() {
     d3.select(this).style("stroke-width", "");
     d3.select(this).style("stroke", "#fff");
 };
+
+//monitor dropdown menu to change map data
+d3.select("#dataSelector").on("change", function() {
+    current = dataSets[this.value]
+
+    setColor.domain([current.minDomain, current.maxDomain]);
+    createMap(states_data);
+
+    counties.attr("class", current.color);
+});
