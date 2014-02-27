@@ -104,3 +104,5 @@ data = sum_avg(convert_teams_to_states(parse_html_data('knicks_stats.html')))
 
 for key, value in data.iteritems():
     print key, value
+
+output_to_json(data)
