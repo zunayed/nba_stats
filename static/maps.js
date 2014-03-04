@@ -7,7 +7,7 @@ var knicks_data
 var dataSets = {
     "fg %": {
         "name": 'fg %',
-        "color": "Oranges",
+        "color": "Greens",
         "minDomain": 30,
         "maxDomain": 50
     },
@@ -51,7 +51,7 @@ var svg = d3.select("#d3_map")
 // create a container for counties
 var counties = svg.append("g")
     .attr("id", "counties")
-    .attr("class", "Oranges");
+    .attr("class", current.color);
 
 
 //reading geoJSON & CSV files
@@ -71,6 +71,7 @@ d3.json("static/data/data.json", function(data){
 //map number of complaint to color intensity
 var stateColor = function(state) {
     if(state in knicks_data){
+        console.log(knicks_data['Texas'][current.name])
         return setColor(knicks_data[state][current.name]);
     }else{
         //no data
@@ -101,7 +102,7 @@ var mouseover = function() {
     var state_name = d3.select(this).attr("state");
 
     if(state_name in knicks_data){
-        var fg = (knicks_data[state_name]['fg %']).toFixed(2);
+        var fg = (knicks_data[state_name][current.name]).toFixed(2);
     }else{
         //no data
         var fg = 'N/A'
