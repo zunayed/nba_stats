@@ -34,6 +34,24 @@ def parse_data(team, team_id):
     return games_data
 
 
+def average_data(data):
+    avg_data = {}
+    fields_to_average = ['FG_PCT', 'FGM', 'FGA', 'FG_PCT', 'FG3M', 'FG3A',
+                         'FG3_PCT', 'FTM', 'FTA', 'FT_PCT', 'OREB', 'DREB',
+                         'REB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
+
+    for team_vs in data:
+        avg_data[team_vs] = {}
+        for field in fields_to_average:
+            total = 0
+            for game in data[team_vs]:
+                total += game[field]
+
+            avg_data[team_vs][field] = total / len(data[team_vs])
+
+    return avg_data
+
+
 def get_teams_data():
     nba_team_ids = {
         'Atlanta Hawks': 1610612737,
@@ -72,12 +90,16 @@ def get_teams_data():
     for team, team_id in nba_team_ids.iteritems():
         league_data[team] = parse_data(team, team_id)
 
+    league_data_averaged = {}
+
+    for team in league_data:
+        league_data_averaged[team] = average_data(league_data[team])
+
     with io.open('league_data.json', 'w', encoding='utf-8') as f:
         f.write(unicode(json.dumps(league_data, ensure_ascii=False)))
 
-
-def average_data(games):
-    pass
+    with io.open('league_data_averaged.json', 'w', encoding='utf-8') as f:
+        f.write(unicode(json.dumps(league_data_averaged, ensure_ascii=False)))
 
 
 get_teams_data()
