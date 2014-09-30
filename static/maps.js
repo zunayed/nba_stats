@@ -97,17 +97,23 @@ var plotData = function() {
 };
 
 var mouseOver = function() {
-    d3.select(this).style("stroke", "green");
+    d3.select(this).style("stroke", "white");
     d3.select(this).style("stroke-width", "4px");
     var team_name = d3.select(this).attr("team");
     var team_abbr = d3.select(this).attr("shortname");
     var stat_value = Math.round(nba_data[team_abbr][curr_stat] * 100)/100;
-    d3.select("#infoBox").html( curr_stat + " - " + team_name + " : " + stat_value);
+    d3.select("#tooltip")
+        .style("left", d3.event.pageX + 20 + "px")
+        .style("top", d3.event.pageY + "px")
+        .style("opacity", 1)
+        .select("#value")
+        .text(curr_stat + " - " + team_name + " : " + stat_value);
 };
 
 var mouseOut = function() {
     d3.select(this).style("stroke", "");
     d3.select(this).style("stroke-width", "");
+    d3.select("#tooltip").style("opacity", 0);;
 };
 
 var calcMinMax = function(data) {
