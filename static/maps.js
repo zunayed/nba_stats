@@ -1,8 +1,8 @@
 /*global d3: false  */
 "use strict";
 
-var curr_team = "Brooklyn Nets";
-var curr_team_abbr = "BKN"
+var curr_team = "New York Knicks";
+var curr_team_abbr = "NYK"
 var curr_stat = "FT_PCT"
 
 //data
@@ -80,7 +80,13 @@ var radSize = function(place) {
     if(place == curr_team_abbr) {
         return 0
     }else {
-        return setSize(nba_data[place][curr_stat]);
+        try {
+            return setSize(nba_data[place][curr_stat]);
+        }
+        catch (e) {
+            console.log(e);
+            return setSize(0);
+        }
     }
 };
 
@@ -88,11 +94,7 @@ var radColor = function(place) {
     if(place == curr_team_abbr) {
         return setColor(0);
     }else {
-        console.log(place)
-        console.log(curr_stat)
-
         try {
-            console.log(nba_data)
             return setColor(nba_data[place][curr_stat]);
         }
         catch (e) {
