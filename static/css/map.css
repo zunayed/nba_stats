@@ -81,3 +81,21 @@ text.axis-worktime {
 }
 
 
+#tooltip {
+    position: absolute;
+    color: white;
+    width: 200px;
+    height: auto;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+#tooltip.hidden {
+    opacity: 0;
+}
+#tooltip p {
+    margin: 0;
+    font-family: sans-serif;
+    font-size: 16px;
+    line-height: 20px;
+}
+
