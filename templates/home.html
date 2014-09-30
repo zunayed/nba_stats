@@ -34,9 +34,11 @@
             </div>
 
             <div class="menu">
-                <select id="dataSelector">
+                <select id="teamSelector">
                     <option value="" disabled="disabled">Change Team</option>
                     <option value="New York Knicks" selected="selected">NY Knicks</option>
+                    <option value="Brooklyn Nets">Brooklyn Nets</option>
+
                 </select>
             </div>
 
@@ -57,6 +59,7 @@
 </div>
 
 <!-- JavaScript -->
+<script src="{{ url_for('static', filename='data/abbrData.js') }}"></script>
 <script src="{{ url_for('static', filename='colorbrewer.js') }}"></script>
 <script src="{{ url_for('static', filename='d3.v3.js') }}"></script>
 <script src="{{ url_for('static', filename='maps.js') }}"></script>
