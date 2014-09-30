@@ -8,6 +8,7 @@ var curr_team = "New York Knicks";
 var curr_team_abbr = "NYK"
 var curr_stat = "FT_PCT"
 var nba_data;
+var team_data;
 var states_data;
 var setColor;   // Quantize function
 var setSize;    // Quantize function
@@ -24,7 +25,8 @@ var path = d3.geo.path().projection(projection);
 
 //reading data file first to get values
 d3.json("static/data/league_data_averaged.json", function(data){
-    nba_data = data[curr_team];
+    nba_data = data
+    team_data = data[curr_team];
 });
 
 //reading geoJSON & CSV files
@@ -78,7 +80,7 @@ var createMap = function(states) {
 
 var plotData = function() {
     //reading data file
-    setQuantizeFunc(calcMinMax(nba_data));
+    setQuantizeFunc(calcMinMax(team_data));
 
     d3.csv("static/data/stadium_geo_data.csv", function(data){
         point_group.selectAll("circle")
@@ -101,7 +103,7 @@ var mouseOver = function() {
     d3.select(this).style("stroke-width", "4px");
     var team_name = d3.select(this).attr("team");
     var team_abbr = d3.select(this).attr("shortname");
-    var stat_value = Math.round(nba_data[team_abbr][curr_stat] * 100)/100;
+    var stat_value = Math.round(team_data[team_abbr][curr_stat] * 100)/100;
     d3.select("#tooltip")
         .style("left", d3.event.pageX + 20 + "px")
         .style("top", d3.event.pageY + "px")
@@ -137,7 +139,7 @@ var radSize = function(shortname) {
         return 0
     }else {
         try {
-            return setSize(nba_data[shortname][curr_stat]);
+            return setSize(team_data[shortname][curr_stat]);
         }
         catch (e) {
             console.log(e);
@@ -152,7 +154,7 @@ var radColor = function(shortname) {
         return setColor(0);
     }else {
         try {
-            return setColor(nba_data[shortname][curr_stat]);
+            return setColor(team_data[shortname][curr_stat]);
         }
         catch (e) {
             console.log(e); 
@@ -161,14 +163,25 @@ var radColor = function(shortname) {
     }
 };
 
-//monitor dropdown menu to change map data
+//monitor dropdown menu to change stat data
 d3.select("#dataSelector").on("change", function() {
     curr_stat = this.value;
-    console.log(curr_stat);
-    // point_group.remove();
-    // point_group = svg.append("g");
-    // plotData()
-    setQuantizeFunc(calcMinMax(nba_data))
+    setQuantizeFunc(calcMinMax(team_data))
+    point_group.selectAll("circle")
+        .transition()
+        .duration(750)
+        .attr("r", function(d){ return radSize(d.shortname); })
+        .attr("fill", function(d){ return radColor(d.shortname); })
+});
+
+//monitor dropdown menu to change team data
+d3.select("#teamSelector").on("change", function() {
+    curr_team = this.value;
+    console.log(curr_team);
+
+    team_data = nba_data[curr_team]
+    curr_team_abbr = abbrData[curr_team]
+    setQuantizeFunc(calcMinMax(team_data))
     point_group.selectAll("circle")
         .transition()
         .duration(750)
