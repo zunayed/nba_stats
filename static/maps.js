@@ -3,7 +3,7 @@
 
 var curr_team = "Brooklyn Nets";
 var curr_team_abbr = "BKN"
-var curr_stat = "FG_PCT"
+var curr_stat = "FT_PCT"
 
 //data
 var nba_data;
@@ -66,7 +66,7 @@ var calc_min_max = function(data) {
     var max_value = 0;
 
     for (var team in data) {
-        var val = data[team]['FT_PCT']
+        var val = data[team][curr_stat]
         if(val > max_value){
             max_value = val
         }else if (val < min_value) {
@@ -80,7 +80,7 @@ var radSize = function(place) {
     if(place == curr_team_abbr) {
         return 0
     }else {
-        return setSize(nba_data[place]['FT_PCT']);
+        return setSize(nba_data[place][curr_stat]);
     }
 };
 
@@ -88,9 +88,18 @@ var radColor = function(place) {
     if(place == curr_team_abbr) {
         return setColor(0);
     }else {
-        return setColor(nba_data[place]['FT_PCT']);
-    }
+        console.log(place)
+        console.log(curr_stat)
 
+        try {
+            console.log(nba_data)
+            return setColor(nba_data[place][curr_stat]);
+        }
+        catch (e) {
+            console.log(e); // pass exception object to error handler
+            return setColor(0);
+        }
+    }
 };
 
 //draw world map
@@ -137,27 +146,6 @@ var mouseout = function() {
     d3.select(this).style("stroke", "");
     d3.select(this).style("stroke-width", "");
 };
-
-// //D3 hoverbox info way
-// var mouseover = function() {
-//     d3.select(this).style("stroke-width", "4px");
-//     var state_name = d3.select(this).attr("state");
-
-//     if(state_name in knicks_data){
-//         var fg = (knicks_data[state_name][current.name]).toFixed(2);
-//     }else{
-//         //no data
-//         var fg = 'N/A'
-//     }
-
-//     d3.select("#infoBox").html("State: " + state_name + ' ' + 'FG %: ' + fg);
-// };
-
-
-// var mouseout = function() {
-//     d3.select(this).style("stroke-width", "");
-//     d3.select(this).style("stroke", "#fff");
-// };
 
 //monitor dropdown menu to change map data
 // d3.select("#dataSelector").on("change", function() {
