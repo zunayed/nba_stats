@@ -67,6 +67,7 @@ def convert_teams_to_states(data):
         'IND': 'Indiana',
         'NOP': 'Louisiana',
         'HOU': 'Texas'
+        'NYK': 'New York'
     }
 
     new_data = {}
