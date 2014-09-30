@@ -1,28 +1,19 @@
 /*global d3: false  */
 "use strict";
 
+var curr_team = "Brooklyn Nets";
+var curr_team_abbr = "BKN"
+var curr_stat = "FG_PCT"
+
 //data
-var knicks_data
+var nba_data;
+var stadium_data;
+var states_data;
 
-var dataSets = {
-    "fg %": {
-        "name": 'fg %',
-        "color": "Greens",
-        "minDomain": 30,
-        "maxDomain": 50
-    },
-    "3pt %": {
-        "name": '3pt %',
-        "color": "Greens",
-        "minDomain": 15,
-        "maxDomain": 50
-
-    }
-};
-
-var current = dataSets['fg %']
-var states_data
-
+//reading data file first to get values
+d3.json("static/data/league_data_averaged.json", function(data){
+    nba_data = data[curr_team];
+});
 
 //set up map
 var w = screen.width;
@@ -35,11 +26,15 @@ var projection = d3.geo.mercator()
 
 var path = d3.geo.path().projection(projection);
 
-//set up a qX-9 number to associate with colorbrew.css styles
+//set up a quantize function to associate with colorbrew styles
 var setColor = d3.scale.quantize()
-    .domain([current.minDomain, current.maxDomain])
-    .range(d3.range(1,9).map(function(i) { return "q" + (i) + "-9"; }));
+    .domain([.605, .902])
+    .range(colorbrewer.Greens[5]);
 
+//set up function for radius size
+var setSize = d3.scale.quantize()
+    .domain([.605, .902])
+    .range(d3.range(4,20).map(function(i) { return i; }));
 
 //initialize map
 var svg = d3.select("#d3_map")
@@ -47,12 +42,12 @@ var svg = d3.select("#d3_map")
     .attr("width", w)
     .attr("height", h);
 
-
 // create a container for counties
 var counties = svg.append("g")
-    .attr("id", "counties")
-    .attr("class", current.color);
+    .attr("id", "counties");
 
+// create container for stadium points
+var point_group = svg.append("g");
 
 //reading geoJSON & CSV files
 d3.json("static/data/us_states_small_size.json", function(states){
@@ -61,22 +56,41 @@ d3.json("static/data/us_states_small_size.json", function(states){
 });
 
 //reading data file
-d3.json("static/data/data.json", function(data){
-    knicks_data = data
-    // counties.selectAll("path")
-    //   .attr("class", stateColor);
+d3.csv("static/data/stadium_geo_data.csv", function(data){
+    stadium_data = data
+    createPoints(stadium_data);
 });
 
+var calc_min_max = function(data) {
+    var min_value = 1;
+    var max_value = 0;
 
-//map number of complaint to color intensity
-var stateColor = function(state) {
-    if(state in knicks_data){
-        console.log(knicks_data['Texas'][current.name])
-        return setColor(knicks_data[state][current.name]);
-    }else{
-        //no data
-        return "q1-9";
+    for (var team in data) {
+        var val = data[team]['FT_PCT']
+        if(val > max_value){
+            max_value = val
+        }else if (val < min_value) {
+            min_value = val
+        }
     }
+    return [min_value, max_value];
+};
+
+var radSize = function(place) {
+    if(place == curr_team_abbr) {
+        return 0
+    }else {
+        return setSize(nba_data[place]['FT_PCT']);
+    }
+};
+
+var radColor = function(place) {
+    if(place == curr_team_abbr) {
+        return setColor(0);
+    }else {
+        return setColor(nba_data[place]['FT_PCT']);
+    }
+
 };
 
 //draw world map
@@ -86,43 +100,71 @@ var createMap = function (states) {
         .data(states.features)
         .enter()
         .append("path")
-        // .style("fill", "#43a2ca")
-        .attr("state", function(d) { return d.properties['NAME'] } )
-        .attr("class", function(d) { return stateColor(d.properties['NAME']) } )
+        .style("fill", "#43a2ca")
+        // .attr("state", function(d) { return d.properties['NAME'] } )
+        // .attr("class", function(d) { return stateColor(d.properties['NAME']) } )
         .attr("stroke", "#fff")
-        .on("mouseover", mouseover)
-        .on("mouseout", mouseout)
         .attr("d", path);
 };
 
 
-//D3 hoverbox info way
-var mouseover = function() {
-    d3.select(this).style("stroke-width", "4px");
-    var state_name = d3.select(this).attr("state");
+// place dots on screen based on cities
+var createPoints = function(json){
+    point_group.selectAll("circle")
+        .data(json)
+        .enter()
+        .append("circle")
+        .attr("cx", function(d){ return projection([d.lon, d.lat])[0]; })
+        .attr("cy", function(d){ return projection([d.lon, d.lat])[1]; })
+        .attr("place", function(d){ return d.place; })
+        .attr("team", function(d){ return d.team; })
+        .attr("r", function(d){ return radSize(d.place)})
+        // .style("fill", "red")
+        .attr("fill", function(d){ return radColor(d.place) } )
 
-    if(state_name in knicks_data){
-        var fg = (knicks_data[state_name][current.name]).toFixed(2);
-    }else{
-        //no data
-        var fg = 'N/A'
-    }
-
-    d3.select("#infoBox").html("State: " + state_name + ' ' + 'FG %: ' + fg);
+        .on("mouseover", mouseover)
+        .on("mouseout", mouseout)
 };
 
+var mouseover = function() {
+    d3.select(this).style("stroke", "green");
+    d3.select(this).style("stroke-width", "4px");
+    var team_name = d3.select(this).attr("team");
+    d3.select("#infoBox").html("Team: " + team_name);
+};
 
 var mouseout = function() {
+    d3.select(this).style("stroke", "");
     d3.select(this).style("stroke-width", "");
-    d3.select(this).style("stroke", "#fff");
 };
 
+// //D3 hoverbox info way
+// var mouseover = function() {
+//     d3.select(this).style("stroke-width", "4px");
+//     var state_name = d3.select(this).attr("state");
+
+//     if(state_name in knicks_data){
+//         var fg = (knicks_data[state_name][current.name]).toFixed(2);
+//     }else{
+//         //no data
+//         var fg = 'N/A'
+//     }
+
+//     d3.select("#infoBox").html("State: " + state_name + ' ' + 'FG %: ' + fg);
+// };
+
+
+// var mouseout = function() {
+//     d3.select(this).style("stroke-width", "");
+//     d3.select(this).style("stroke", "#fff");
+// };
+
 //monitor dropdown menu to change map data
-d3.select("#dataSelector").on("change", function() {
-    current = dataSets[this.value]
+// d3.select("#dataSelector").on("change", function() {
+//     current = dataSets[this.value]
 
-    setColor.domain([current.minDomain, current.maxDomain]);
-    createMap(states_data);
+//     setColor.domain([current.minDomain, current.maxDomain]);
+//     createMap(states_data);
 
-    counties.attr("class", current.color);
-});
+//     counties.attr("class", current.color);
+// });
