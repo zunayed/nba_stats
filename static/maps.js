@@ -159,7 +159,13 @@ var radColor = function(shortname) {
 d3.select("#dataSelector").on("change", function() {
     curr_stat = this.value;
     console.log(curr_stat);
-    point_group.remove();
-    point_group = svg.append("g");
-    plotData()
+    // point_group.remove();
+    // point_group = svg.append("g");
+    // plotData()
+    setQuantizeFunc(calcMinMax(nba_data))
+    point_group.selectAll("circle")
+        .transition()
+        .duration(750)
+        .attr("r", function(d){ return radSize(d.shortname); })
+        .attr("fill", function(d){ return radColor(d.shortname); })
 });
