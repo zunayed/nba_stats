@@ -110,6 +110,8 @@ var mouseOver = function() {
         .style("opacity", 1)
         .select("#value")
         .text(team_name + " : " + stat_value);
+
+    console.log(team_name + " " + stat_value);
 };
 
 var mouseOut = function() {

@@ -9,7 +9,7 @@
     
     <div class="small-4 large-4 columns">
         <div id="corner_item">
-            <div class="mapText"> NBA Stats</div>
+            <div class="mapText">NBA Stats</div>
             <div class="menu">
                 <select id="dataSelector">
                     <option value="" disabled="disabled">Change Data</option>
@@ -46,17 +46,22 @@
 
             <p class="mapSubtext">
                 <!-- <a href="#test" data-reveal-id="myModal" class="radius button tiny">Time of Day Viz</a> -->
+                2013-14 Season
                 <br />
                 <a href="https://github.com/zunayed/nba_stats">Github</a> 
                 <br />
                 <a href="http://blog.dtostillwell.com">Zunayed Morsalin</a>
                 <br />
-                2013-14 Season
-                <br />
-                Values are averages of all 
-                <br />
-                the games played vs opponents
+                <a href="#" data-reveal-id="myModal">More Info</a>
             </p>
+
+            <div id="myModal" class="reveal-modal" data-reveal>
+              <p>Values are averages of all the games played vs opponents. The data scraped from the nba stats site</p>
+              <p>Built with Flask, D3, and Foundation</p>
+              <a class="close-reveal-modal">&#215;</a>
+            </div>
+
+
         </div>
     </div>
     <div id="tooltip" class="hidden">
