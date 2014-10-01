@@ -109,7 +109,7 @@ var mouseOver = function() {
         .style("top", d3.event.pageY + "px")
         .style("opacity", 1)
         .select("#value")
-        .text(curr_stat + " - " + team_name + " : " + stat_value);
+        .text(team_name + " : " + stat_value);
 };
 
 var mouseOut = function() {
