@@ -2,8 +2,8 @@
 "use strict";
 
 //set up map and default dataset
-var w = screen.width;
-var h = screen.height;
+var w = 1300;
+var h = 800;
 var curr_team = "New York Knicks";
 var curr_team_abbr = "NYK"
 var curr_stat = "FT_PCT"
