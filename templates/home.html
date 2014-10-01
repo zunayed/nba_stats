@@ -9,7 +9,7 @@
     
     <div class="small-4 large-4 columns">
         <div id="corner_item">
-            <div class="mapText"> NBA Data</div>
+            <div class="mapText"> NBA Stats</div>
             <div class="menu">
                 <select id="dataSelector">
                     <option value="" disabled="disabled">Change Data</option>
@@ -37,8 +37,10 @@
                 <select id="teamSelector">
                     <option value="" disabled="disabled">Change Team</option>
                     <option value="New York Knicks" selected="selected">NY Knicks</option>
-                    <option value="Brooklyn Nets">Brooklyn Nets</option>
 
+                    {%for team in nba_teams %} 
+                        <option value="{{team}}">{{team}}</option>
+                    {% endfor %}
                 </select>
             </div>
 
@@ -47,9 +49,13 @@
                 <br />
                 <a href="https://github.com/zunayed/nba_stats">Github</a> 
                 <br />
-                Zunayed Morsalin
+                <a href="https://blog.dtostillwell.com">Zunayed Morsalin</a>
                 <br />
                 2013-14 Season
+                <br />
+                Values are averages of all 
+                <br />
+                the games played vs opponents
             </p>
         </div>
     </div>

@@ -58,12 +58,12 @@ var setQuantizeFunc = function(domain){
     //set up a quantize function to associate with colorbrew styles
     setColor = d3.scale.quantize()
         .domain(domain)
-        .range(colorbrewer.Greens[8].slice(1));
+        .range(colorbrewer.Purples[8].slice(2));
 
     //set up function for radius size
     setSize = d3.scale.quantize()
         .domain(domain)
-        .range(d3.range(6,35).map(function(i) { return i; }));
+        .range(d3.range(8,40).map(function(i) { return i; }));
 };
 
 //draw world map
