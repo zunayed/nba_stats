@@ -165,15 +165,19 @@ var radColor = function(shortname) {
     }
 };
 
-//monitor dropdown menu to change stat data
-d3.select("#dataSelector").on("change", function() {
-    curr_stat = this.value;
-    setQuantizeFunc(calcMinMax(team_data))
+var changeData = function() {
     point_group.selectAll("circle")
         .transition()
         .duration(750)
         .attr("r", function(d){ return radSize(d.shortname); })
         .attr("fill", function(d){ return radColor(d.shortname); })
+};
+
+//monitor dropdown menu to change stat data
+d3.select("#dataSelector").on("change", function() {
+    curr_stat = this.value;
+    setQuantizeFunc(calcMinMax(team_data))
+    changeData()
 });
 
 //monitor dropdown menu to change team data
@@ -184,9 +188,7 @@ d3.select("#teamSelector").on("change", function() {
     team_data = nba_data[curr_team]
     curr_team_abbr = abbrData[curr_team]
     setQuantizeFunc(calcMinMax(team_data))
-    point_group.selectAll("circle")
-        .transition()
-        .duration(750)
-        .attr("r", function(d){ return radSize(d.shortname); })
-        .attr("fill", function(d){ return radColor(d.shortname); })
+    changeData()
 });
+
+
