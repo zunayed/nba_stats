@@ -1,0 +1,162 @@
+
+<!doctype html>
+<html class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NBA stats visualization</title>
+
+    <!-- css -->
+    <link rel="stylesheet" href="/static/css/foundation.css">
+    <link rel="stylesheet" href="/static/css/colorbrewer.css">
+    <link rel="stylesheet" href="/static/css/map.css">
+
+    <!-- javascript -->
+    <script src="/static/foundation/modernizr.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+  </head>
+
+  <body>
+
+
+<div class="row">
+    <div class="small-2 large-4 columns">
+    <br />
+        <div id="d3_map"></div>
+    </div>
+
+    <div class="small-4 large-4 columns">
+        <div id="corner_item">
+            <div class="mapText">NBA Stats</div>
+            <div class="menu">
+                <select id="dataSelector">
+                    <option value="" disabled="disabled">Change Data</option>
+                    <option value="FT_PCT" selected="selected">Free Throw %</option>
+                    <option value="FG3A">3PT Attemps</option>
+                    <option value="AST">Assists</option>
+                    <option value="STL">Steals</option>
+                    <option value="PTS">Points</option>
+                    <option value="FG_PCT">FG %</option>
+                    <option value="FG3M">3PT FG Made</option>
+                    <option value="OREB">Off Rebounds</option>
+                    <option value="FTA">FG Attempts</option>
+                    <option value="FGM">FG Made</option>
+                    <option value="FG3_PCT">3PT %</option>
+                    <option value="PF">Personal Foul</option>
+                    <option value="BLK">Blocks</option>
+                    <option value="REB">Rebounds</option>
+                    <option value="DREB">Defensive Rebounds</option>
+                    <option value="FTM">Free Throw Made</option>
+                    <option value="FGA">FG Attemps</option>
+                </select>
+            </div>
+
+            <div class="menu">
+                <select id="teamSelector">
+                    <option value="" disabled="disabled">Change Team</option>
+                    <option value="New York Knicks" selected="selected">NY Knicks</option>
+                    <option value="Atlanta Hawks">Atlanta Hawks</option>
+                    <option value="Boston Celtics">Boston Celtics</option>
+                    <option value="Brooklyn Nets">Brooklyn Nets</option>
+                    <option value="Charlotte Hornets">Charlotte Hornets</option>
+                    <option value="Chicago Bulls">Chicago Bulls</option>
+                    <option value="Cleveland Cavaliers">Cleveland Cavaliers</option>
+                    <option value="Detroit Pistons">Detroit Pistons</option>
+                    <option value="Indiana Pacers">Indiana Pacers</option>
+                    <option value="Miami Heat">Miami Heat</option>
+                    <option value="Milwaukee Bucks">Milwaukee Bucks</option>
+                    <option value="New York Knicks">New York Knicks</option>
+                    <option value="Orlando Magic">Orlando Magic</option>
+                    <option value="Philadelphia 76ers">Philadelphia 76ers</option>
+                    <option value="Toronto Raptors">Toronto Raptors</option>
+                    <option value="Washington Wizards">Washington Wizards</option>
+                    <option value="Dallas Mavericks">Dallas Mavericks</option>
+                    <option value="Denver Nuggets">Denver Nuggets</option>
+                    <option value="Golden State Warriors">Golden State Warriors</option>
+                    <option value="Houston Rockets">Houston Rockets</option>
+                    <option value="Los Angeles Clippers">Los Angeles Clippers</option>
+                    <option value="Los Angeles Lakers">Los Angeles Lakers</option>
+                    <option value="Memphis Grizzlies">Memphis Grizzlies</option>
+                    <option value="Minnesota Timberwolves">Minnesota Timberwolves</option>
+                    <option value="New Orleans Pelicans">New Orleans Pelicans</option>
+                    <option value="Oklahoma City Thunder">Oklahoma City Thunder</option>
+                    <option value="Phoenix Suns">Phoenix Suns</option>
+                    <option value="Portland Trail Blazers">Portland Trail Blazers</option>
+                    <option value="Sacramento Kings">Sacramento Kings</option>
+                    <option value="San Antonio Spurs">San Antonio Spurs</option>
+                    <option value="Utah Jazz">Utah Jazz</option>
+                </select>
+            </div>
+
+            <p class="mapSubtext">
+                <!-- <a href="#test" data-reveal-id="myModal" class="radius button tiny">Time of Day Viz</a> -->
+                2013-14 Season
+                <br />
+                <a href="https://github.com/zunayed/nba_stats">Github</a>
+                <br />
+                <a href="http://blog.dtostillwell.com">Zunayed Morsalin</a>
+                <br />
+
+                This visualization illustrates the
+                <br />
+                points/percentages/numbers that
+                <br />
+                the selected team achieved
+                <br />
+                compared to other teams in the league.
+                <br />
+                <br />
+                Just find your team in the above
+                <br />
+                dropdown and select the stats you
+                <br />
+                want to explore
+                <br />
+
+                <a href="#" data-reveal-id="myModal">More Info</a>
+            </p>
+
+            <div id="myModal" class="reveal-modal" data-reveal>
+              <p>Values are averages of all the games played vs opponents. The data scraped from the nba stats site</p>
+              <p>Built with Flask, D3, and Foundation</p>
+              <a class="close-reveal-modal">&#215;</a>
+            </div>
+
+
+        </div>
+    </div>
+    <div id="tooltip" class="hidden">
+        <p><span id="value">100</span></p>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="/static/data/abbrData.js"></script>
+<script src="/static/colorbrewer.js"></script>
+<script src="/static/d3.v3.js"></script>
+<script src="/static/maps.js"></script>
+
+
+  </body>
+
+  <footer>
+    <script src="static/foundation/foundation.min.js"></script>
+    <script src="static/foundation/foundation/foundation.reveal.js"></script>
+
+    <script>
+      $(document).foundation();
+
+    </script>
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-55351100-1', 'auto');
+      ga('send', 'pageview');
+
+  </script>
+  </footer>
+</html>
